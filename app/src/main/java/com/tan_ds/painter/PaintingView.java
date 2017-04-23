@@ -14,6 +14,9 @@ import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -25,15 +28,14 @@ public class PaintingView extends View {
 
     private float lastX, lastY, startX ,startY;
     public boolean flag;
-    Rect myRect = new Rect();
+    public int colInt;
 
     // для мультитача
-    private SparseArray<PointF> lastPoints = new SparseArray<>(10);
+    private SparseArray<PointF> lastPoints = new SparseArray<>(2);
 
     private Bitmap cacheBitmap;
     private Paint linePaint;
     private Canvas bitmapCanvas;
-
 
     public PaintingView(Context context) {
         super(context);
@@ -83,41 +85,93 @@ public class PaintingView extends View {
     public boolean onTouchEvent(MotionEvent event) {
 
 
+        // TextView tex = (TextView) findViewById(R.id.col_vo);
+        // tex.setText(((Integer)event.getPointerCount()).toString()) ;
         // загатовки под обработку события
         switch (event.getActionMasked()){
             case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_POINTER_DOWN:
                 // multitouch
-                clear();
+                // clear();
+                int pointerId = event.getPointerId(event.getActionIndex());
+                lastPoints.put(pointerId, new PointF(event.getX(event.getActionIndex()),
+                                                    event.getY(event.getActionIndex())));
+
                 startX = lastX = event.getX();
                 startY = lastY = event.getY();
+                colInt ++;
                 return true;
             case MotionEvent.ACTION_MOVE:
 
-                if (flag) { // true -> rectangle
-                    lastX = event.getX();
-                    lastY = event.getY();
-                    clear();
-                    bitmapCanvas.drawLine(startX,startY,startX,lastY,linePaint);
-                    bitmapCanvas.drawLine(startX,startY,lastX,startY,linePaint);
-                    bitmapCanvas.drawLine(lastX,startY,lastX,lastY,linePaint);
-                    bitmapCanvas.drawLine(startX,lastY,lastX,lastY,linePaint);
-                    //bitmapCanvas.drawRect(startX,startY,lastX,lastY, linePaint); // старый-добрый прямоугольник в лоб
-                } else { // not true -> line
-                    bitmapCanvas.drawLine(lastX,lastY, event.getX(), event.getY(), linePaint);
-                    lastX = event.getX();
-                    lastY = event.getY();
-                }
+
+                    if (flag) { // true -> rectangle
+
+                        if(colInt == 2) { // для двух пальцев
+                            for (int i = 0; i < event.getPointerCount(); i++) {
+
+                                PointF last = lastPoints.get(event.getPointerId(i));
+
+                                clear();
+                                last.x = lastX;
+                                last.y = lastY;
+
+                                lastX = event.getX(i);
+                                lastY = event.getY(i);
+
+
+                                bitmapCanvas.drawLine(last.x, last.y, last.x, lastY, linePaint);
+                                bitmapCanvas.drawLine(last.x, last.y, lastX, last.y, linePaint);
+                                bitmapCanvas.drawLine(lastX, last.y, lastX, lastY, linePaint);
+                                bitmapCanvas.drawLine(last.x, lastY, lastX, lastY, linePaint);
+                                //bitmapCanvas.drawRect(last.x, last.y,lastX,lastY, linePaint); // старый-добрый прямоугольник влоб
+
+                                /*bitmapCanvas.drawLine(startX, startY, startX, lastY, linePaint);
+                                bitmapCanvas.drawLine(startX, startY, lastX, startY, linePaint);
+                                bitmapCanvas.drawLine(lastX, startY, lastX, lastY, linePaint);
+                                bitmapCanvas.drawLine(startX, lastY, lastX, lastY, linePaint);*/
+
+
+                            }
+
+                        } else if (colInt == 1){ // для одного пальца
+                            lastX = event.getX();
+                            lastY = event.getY();
+                            clear();
+                            bitmapCanvas.drawLine(startX,startY,startX,lastY,linePaint);
+                            bitmapCanvas.drawLine(startX,startY,lastX,startY,linePaint);
+                            bitmapCanvas.drawLine(lastX,startY,lastX,lastY,linePaint);
+                            bitmapCanvas.drawLine(startX,lastY,lastX,lastY,linePaint);
+                        }
+                    } else { // not true -> line
+
+                        for (int i = 0; i < event.getPointerCount(); i++) {
+
+                            PointF last = lastPoints.get(event.getPointerId(i));
+                            lastX = event.getX(i);
+                            lastY = event.getY(i);
+                            bitmapCanvas.drawLine(last.x, last.y, lastX, lastY, linePaint);
+                            last.x = lastX;
+                            last.y = lastY;
+                        }
+                    }
+
 
 
 
                 invalidate();
                 return true;
-
+            case MotionEvent.ACTION_POINTER_UP:
+                colInt--;
+                return true;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
+                colInt--;
+                lastPoints.clear();
                 return true;
 
         }
+        //viewColVo.setText(((Integer)colInt).toString());
+
         init();
         return super.onTouchEvent(event);
     }
@@ -150,6 +204,10 @@ public class PaintingView extends View {
         bitmapCanvas.drawColor(Color.BLACK, PorterDuff.Mode.CLEAR);
         invalidate();
     }
-
-
+/*
+    public void say(){
+        TextView viewColVo = (TextView) findViewById(R.id.col_vo);
+        viewColVo.setText("qwerty");
+    }
+*/
 }

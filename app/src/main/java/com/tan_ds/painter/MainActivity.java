@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements View.OnClickListener {
@@ -22,8 +23,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
         painView = (PaintingView) findViewById(R.id.paintView);
         Button clearButt = (Button) findViewById(R.id.clearButt);
         Switch swch = (Switch) findViewById(R.id.switch1);
+        TextView ColVo = (TextView) findViewById(R.id.col_vo);
         clearButt.setOnClickListener(this);
-
+        ColVo.setText(((Integer)painView.colInt).toString());
         swch.setChecked(false);
 
         swch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

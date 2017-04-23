@@ -7,6 +7,14 @@
     android:orientation="vertical"
     tools:context="com.tan_ds.painter.MainActivity">
 
+    <TextView
+        android:layout_margin="10dp"
+        android:id="@+id/col_vo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="qwe"
+        android:layout_gravity="center"/>
+
    <com.tan_ds.painter.PaintingView
        android:id="@+id/paintView"
        android:layout_width="match_parent"
