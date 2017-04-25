@@ -7,13 +7,6 @@
     android:orientation="vertical"
     tools:context="com.tan_ds.painter.MainActivity">
 
-    <TextView
-        android:layout_margin="10dp"
-        android:id="@+id/col_vo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="qwe"
-        android:layout_gravity="center"/>
 
    <com.tan_ds.painter.PaintingView
        android:id="@+id/paintView"
@@ -32,22 +25,46 @@
       <Button
           android:id="@+id/clearButt"
           android:layout_width="match_parent"
-          android:layout_height="wrap_content"
+          android:layout_height="match_parent"
           android:text="@string/annihilate_all"
           android:layout_weight="1"
           />
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             >
-            <Switch
+       <!--     <Switch
                 android:id="@+id/switch1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textOff="@string/line"
                 android:textOn="@string/rectangle" />
+        -->
+            <RadioGroup
+                android:id="@+id/groupRadio"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <RadioButton
+                    android:id="@+id/buttLine"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/line"/>
+                <RadioButton
+                    android:id="@+id/buttRect"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/rectangle"/>
+                <RadioButton
+                    android:id="@+id/buttDraw"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Draw"/>
+
+            </RadioGroup>
+
+
         </FrameLayout>
 
    </LinearLayout>
