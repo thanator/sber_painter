@@ -3,12 +3,14 @@ package com.tan_ds.painter;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -109,12 +111,10 @@ public class PaintingView extends View {
                 startX = lastX = event.getX();
                 startY = lastY = event.getY();
 
-                if (colInt == 1){
+                colInt ++;
+                if (colInt == 2){
                     flag =  event.getPointerId(event.getActionIndex());
                 }
-
-                colInt ++;
-
 
                 return true;
             case MotionEvent.ACTION_MOVE:
@@ -143,8 +143,26 @@ public class PaintingView extends View {
                                     bitmapCanvas.drawLine(last.x, lastY, lastX, lastY, linePaint);
                                 }
                                 if (figure == Perechisl.fignia){
+
+                                    float sX, sY, lX, lY;
+                                    if (startX < lastX){
+                                        sX = last.x;
+                                        lX = lastX;
+                                    } else{
+                                        sX = lastX;
+                                        lX = last.x;
+                                    }
+
+                                    if (startY < lastY){
+                                        sY = last.y;
+                                        lY = lastY;
+                                    } else{
+                                        sY = lastY;
+                                        lY = last.y;
+                                    }
+
                                     Drawable d = getResources().getDrawable(R.drawable.shapedrawable);
-                                    d.setBounds((int)last.x, (int)last.y, (int)lastX, (int)lastY);
+                                    d.setBounds((int)sX, (int)sY, (int)lX, (int)lY);
                                     d.draw(bitmapCanvas);
                                 }
 
@@ -154,7 +172,7 @@ public class PaintingView extends View {
                                 bitmapCanvas.drawLine(startX, startY, lastX, startY, linePaint);
                                 bitmapCanvas.drawLine(lastX, startY, lastX, lastY, linePaint);
                                 bitmapCanvas.drawLine(startX, lastY, lastX, lastY, linePaint);*/
-
+                                flag =  event.getPointerId(event.getActionIndex());
                             }
 
                         } else if (colInt == 1){ // для одного пальца
@@ -164,6 +182,7 @@ public class PaintingView extends View {
 
                             clear();
                             if (figure == Perechisl.rect){
+
                                 bitmapCanvas.drawLine(startX,startY,startX,lastY,linePaint);
                                 bitmapCanvas.drawLine(startX,startY,lastX,startY,linePaint);
                                 bitmapCanvas.drawLine(lastX,startY,lastX,lastY,linePaint);
@@ -171,11 +190,35 @@ public class PaintingView extends View {
                             }
                             if (figure == Perechisl.fignia){
                                 Drawable d = getResources().getDrawable(R.drawable.shapedrawable);
-                                d.setBounds((int)startX, (int)startY, (int)lastX, (int)lastY);
+
+                                float sX, sY, lX, lY;
+
+                                if (startX < lastX){
+                                    sX = startX;
+                                    lX = lastX;
+                                } else{
+                                    sX = lastX;
+                                    lX = startX;
+                                }
+
+                                if (startY < lastY){
+                                    sY = startY;
+                                    lY = lastY;
+                                } else{
+                                    sY = lastY;
+                                    lY = startY;
+                                }
+
+                                d.setBounds((int)sX, (int)sY, (int)lX, (int)lY);
                                 d.draw(bitmapCanvas);
+
+
+
+
+
+
+
                             }
-
-
                         }
                     } else if (figure == Perechisl.lining) { // not true -> line
 
@@ -193,7 +236,7 @@ public class PaintingView extends View {
                 invalidate();
                 return true;
             case MotionEvent.ACTION_POINTER_UP:
-                if ((figure == Perechisl.rect || figure == Perechisl.fignia) && (event.getPointerId(event.getActionIndex()) == flag)){
+                if ((figure == Perechisl.rect || figure == Perechisl.fignia) && (event.getPointerId(event.getActionIndex()) != flag)){
                     startX = lastX;
                     startY = lastY;
                 }
@@ -201,6 +244,7 @@ public class PaintingView extends View {
                 return true;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
+
                 colInt--;
                 lastPoints.clear();
                 return true;
@@ -220,10 +264,8 @@ public class PaintingView extends View {
             canvas.drawRect(0.1f*getWidth(), 0.1f*getHeight(), 0.9f*getWidth(), 0.9f*getWidth(), linePaint);
         }
 
-
         canvas.drawBitmap(cacheBitmap, 0,0, null);
         init();
-
     }
 
     private void init(){
@@ -233,7 +275,6 @@ public class PaintingView extends View {
         linePaint.setStrokeJoin(Paint.Join.ROUND);
         linePaint.setColor(getResources().getColor(R.color.colorAccent));
         linePaint.setStrokeWidth(getResources().getDimension(R.dimen.default_line_width));
-
     }
 
     public void clear(){
